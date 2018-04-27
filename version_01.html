@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>City Cluster</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 100%;
+			height: 100%;
+		}
+		.near_city_info_field {font-weight:bold}
+
+	</style>
+
+	<style>#map { width: 100%; height: 100%; }
+.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
+</head>
+<body>
+
+<div id='map' style="position: absolute; left:20%;right:0px;width:80%;z-index:0;background:white;"></div>
+
+<form  action="form_action.asp" method="get" style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;">
+  <br><br><br>
+  Select by name: <input type="text" id="city_name_input" value="Shanghai" style="color:gray;"size=18/>  
+  <button id="search_name_button" type="button" value="Shanghai" name="">Search</button>
+  <br><br>
+  Select by ID: <input type="text" id="city_id_input" value="3536" style="color:gray;"size=18/>
+  <button id="search_id_button" type="button" name="">Search</button>
+  <br><br>
+</form>
+
+<table border="0"id='basic_info' style="position:absolute ; z-index:0;left:0px;top:300px">
+  <tr>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:16px" id = 'IDIcon'>ID:</th>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:16px" id = 'cityID'>None</th>
+  </tr>
+  <tr>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'nameIcon'>Name:</td>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'cityName'>None</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'countryIcon'>Country:</td>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'cityCountry'>None</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'typeIcon'>Type:</td>
+    <td style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'cityType'>None</td>
+  </tr>
+</table>
+
+
+<button style="z-index:3; position:absolute; left:0px;top:600px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:16px" id = 'city_tree_button'>CityTree</button>
+<button style="z-index:3; position:absolute; left:0px;top:630px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:16px" id = 'near_cities_button'>Top9 similar cities</button>
+<button style="z-index:3; position:absolute; left:0px;top:660px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:16px" id = 'boxplot_botton'>Boxplot Analysis</button>
+<button style="z-index:3; position:absolute; left:0px;top:720px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:16px" id = 'reset_botton'>Reset</button>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+	   
+<script type="text/javascript" src="js/world_cities.js"></script>
+<script type="text/javascript" src="js/proj4.js"></script>
+<script type="text/javascript" src="js/proj4leaflet.js"></script>
+<script type="text/javascript" src="data/box_plot.js"></script>
+<script type="text/javascript" src="data/box_plot_shanghai.js"></script>
+<script type="text/javascript" src="data/basic_info.js"></script>
+<script type="text/javascript" src="data/near_cities.js"></script>
+<script type="text/javascript" src="data/city_coordinate.js"></script>
+
+<div id='city_tree' style="display: none;position: absolute; z-index:0;left:21%;top:180px;width :800px;height:800px;background-color:rgba(18,89,147,0.8)">
+<img id='img_tree' style="position:absolute;left:0px;top:200px;width:400px;height:400px" src="img/tree_map/1.png"></img>
+<img id='img_1975' style="position:absolute;left:400px;top:200px;width:100px;height:100px" src="img/13810_1975jpg/1.jpg"></img>
+<img id='img_1990' style="position:absolute;left:400px;top:300px;width:100px;height:100px" src="img/13810_1990jpg/1.jpg"></img>
+<img id='img_2000' style="position:absolute;left:400px;top:400px;width:100px;height:100px" src="img/13810_2000jpg/1.jpg"></img>
+<img id='img_2015' style="position:absolute;left:400px;top:500px;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
+<p style="z-index:3; position:absolute; left:430px;top:260px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>1975</p>
+<p style="z-index:3; position:absolute; left:430px;top:360px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>1990</p>
+<p style="z-index:3; position:absolute; left:430px;top:460px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>2000</p>
+<p style="z-index:3; position:absolute; left:430px;top:560px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>2015</p>
+</div>
+
+<div id='near_cities' style="display: none;position: absolute; z-index:0;left:21%;top:180px;width :800px;height:800px;background-color:rgba(18,89,147,0.8)">
+
+<table border="0" cellspacing="5" id='near_cities_info' style="position:absolute ; z-index:0;left:0px;top:0%;height:40%";>
+  <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'filed_name_id' class = 'near_city_info_field'>ID</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'filed_name_name'class = 'near_city_info_field'>Name</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'filed_name_country' class = 'near_city_info_field'>Country</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'filted_name_type'class = 'near_city_info_field'>Type</td>
+  </tr>
+  <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city01_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city01_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city01_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city01_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city02_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city02_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city02_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city02_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city03_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city03_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city03_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city03_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city04_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city04_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city04_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city04_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city05_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city05_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city05_country'class = 'near_city_info_table'None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city05_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city06_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city06_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city06_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city06_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city07_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city07_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city07_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city07_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city08_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city08_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city08_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city08_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+    <tr>
+    <td style="font-family:微软雅黑;color:white;" id = 'near_city09_id'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city09_name'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city09_country'class = 'near_city_info_table'>None:</td>
+	<td style="font-family:微软雅黑;color:white;" id = 'near_city09_type'class = 'near_city_info_table'>None:</td>
+  </tr>
+  
+</table>
+<p id='near_city_title01' style='position:absolute;left:10px;top:390px;font-size:8px;color:white'>title</p>
+<p id='near_city_title02' style='position:absolute;left:130px;top:390px;font-size:8px;color:white'>title</p>
+<p id='near_city_title03' style='position:absolute;left:250px;top:390px;font-size:8px;color:white'>title</p>
+<p id='near_city_title04' style='position:absolute;left:10px;top:510px;font-size:8px;color:white'>title</p>
+<p id='near_city_title05' style='position:absolute;left:130px;top:510px;font-size:8px;color:white'>title</p>
+<p id='near_city_title06' style='position:absolute;left:250px;top:510px;font-size:8px;color:white'>title</p>
+<p id='near_city_title07' style='position:absolute;left:10px;top:630px;font-size:8px;color:white'>title</p>
+<p id='near_city_title08' style='position:absolute;left:130px;top:630px;font-size:8px;color:white'>title</p>
+<p id='near_city_title09' style='position:absolute;left:250px;top:630px;font-size:8px;color:white'>title</p>
+<img id='img01' style="position:absolute;left:0px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
+<img id='img02' style="position:absolute;left:120px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/2.jpg"></img>
+<img id='img03' style="position:absolute;left:240px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/3.jpg"></img>
+<img id='img04' style="position:absolute;left:0px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/4.jpg"></img>
+<img id='img05' style="position:absolute;left:120px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/5.jpg"></img>
+<img id='img06' style="position:absolute;left:240px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/6.jpg"></img>
+<img id='img07' style="position:absolute;left:0px;top:660px;width:100px;height:100px" src="img/13810_2015jpg/7.jpg"></img>
+<img id='img08' style="position:absolute;left:120px;top:660px;width:100px;height:100px" src="img/13810_2015jpg/8.jpg"></img>
+<img id='img09' style="position:absolute;left:240px;top:660px;width:100px;height:100px" src="img/13810_2015jpg/9.jpg"></img>
+</div>
+
+<div id ="echart" style="display: none;z-index:0; position:absolute; left:21%;top:180px;width :800px;height:800px;background-color:rgba(18,89,147,0.8)">
+
+</div>
+<script type="text/javascript">
+	//城市基本信息导入
+	var index_array = basic_info_data.index
+	var data_array = basic_info_data.data
+	var cityid_array = data_array[0]
+	var city_name_array = data_array[1]
+	var city_type_array = data_array[2]
+	var city_country_array = data_array[3]
+	var position = city_name_array.indexOf('Shanghai')
+	cityid = cityid_array[position]
+	var city_name = city_name_array[position]
+	var city_country = city_country_array[position]
+	var city_type = city_type_array[position]
+		
+	//最近20个城市数据导入
+	var near_cities_array = near_cities_data.data
+	near_cities = near_cities_array[cityid-1]
+
+	//leaflet地图属性设置--如中心点坐标
+	var map = L.map('map').setView([0, 0],3);
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.light'
+	}).addTo(map);
+
+
+	// control that shows state info on hover
+	var info = L.control();
+
+	info.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'info');
+		this.update();
+		return this._div;
+	};
+
+	info.update = function (props) {
+		this._div.innerHTML = '<h4>World City Area</h4>' +  (props ?
+			'<b>' + props.name + '</b><br />' + props.AREA + ' km<sup>2</sup>'
+			: 'Hover over a city');
+	};
+
+	info.addTo(map);
+
+
+	// get color depending on population density value
+	function getColor(d) {
+	
+		return d == 1 ? 'rgb(95,199,97)' :
+				d == 2 ? 'rgb(194,150,104)':
+				d == 3  ? 'rgb(101,214,181)' :
+				d == 4  ? 'rgb(240,205,35)' :
+				d == 5   ? 'rgb(222,65,45)' :
+				d == 6   ? 'rgb(194,47,124)' :
+				d == 7   ? 'rgb(122,126,222)' :
+							'rgb(156,156,156)';
+	}
+
+	function style(feature) {
+		return {
+			weight: 2,
+			opacity: 1,
+			color: getColor(feature.properties.type),
+			dashArray: '3',
+			fillOpacity: 0.7,
+			fillColor: getColor(feature.properties.type)
+		};
+	}
+
+	function highlightFeature(e) {
+		var layer = e.target;
+
+		layer.setStyle({
+			weight: 5,
+			color: '#666',
+			dashArray: '',
+			fillOpacity: 0.7
+		});
+
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();
+		}
+
+		info.update(layer.feature.properties);
+	}
+
+	var geojson;
+
+	function resetHighlight(e) {
+		geojson.resetStyle(e.target);
+		info.update();
+	}
+
+	function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
+	function linkPicture(e){
+		var id = this.feature.properties.IDt
+		$("#img").attr('src','img/'+id+ '.png');	
+		clicked_cityid = this.feature.properties.ID1;
+		var position = cityid_array.indexOf(parseInt(clicked_cityid))
+		cityid = cityid_array[position]
+		city_name = city_name_array[position]
+		var city_country = city_country_array[position]
+		var city_type = city_type_array[position]
+		alert(city_name);
+		document.getElementById("city_name_input").value = city_name
+		document.getElementById("city_id_input").value = cityid		
+		$('#cityID').text(cityid);
+		$('#cityName').text(city_name);
+		$('#cityCountry').text(city_country);
+		$('#cityType').text(city_type);
+		
+	}
+	//设置每个城市地图互动效果
+	function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: linkPicture
+		});
+	}
+	
+proj4.defs("urn:ogc:def:crs:EPSG::3395", "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
+	geojson = L.Proj.geoJson(statesData, {
+		style: style,
+		onEachFeature: onEachFeature
+		}).addTo(map);
+
+	map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
+	var legend = L.control({position: 'bottomright'});
+	legend.onAdd = function (map) {
+
+		var div = L.DomUtil.create('div', 'info legend'),
+			grades = [1,2,3,4,5,6,7],
+			type = ['萌芽型','佝偻型','成长型','膨胀型','成熟型','区域型','衰退型'],
+			labels = [],
+			value;
+		for (var i = 0; i < grades.length; i++) {
+			value = grades[i];
+			name = type[i];
+			labels.push(
+				'<i style="background:' + getColor(value) + '"></i> ' +
+			name);
+		}
+
+		div.innerHTML = labels.join('<br>');
+		return div;
+	};
+	legend.addTo(map);
+
+//获取用户输入Name
+$('#search_name_button').click(function() {
+	var input_city_name = $('#city_name_input').val();
+	var position = city_name_array.indexOf(input_city_name)
+	cityid = cityid_array[position]
+	city_name = city_name_array[position]
+	var city_country = city_country_array[position]
+	var city_type = city_type_array[position]
+    alert(city_name);
+	var city_coordinates = [city_coordinate[1][cityid-1],city_coordinate[0][cityid-1]]
+	map.setView(city_coordinates,6);
+	document.getElementById("city_id_input").value = cityid
+	
+	$('#reset_botton').click();
+	$('#cityID').text(cityid);
+	$('#cityName').text(city_name);
+	$('#cityCountry').text(city_country);
+	$('#cityType').text(city_type);
+  });
+//获取用户输入ID
+$('#search_id_button').click(function() {
+	var input_city_id = $('#city_id_input').val();
+	var position = cityid_array.indexOf(parseInt(input_city_id))
+	cityid = cityid_array[position]
+	city_name = city_name_array[position]
+	var city_country = city_country_array[position]
+	var city_type = city_type_array[position]
+    alert(input_city_id);
+	var city_coordinates = [city_coordinate[1][cityid-1],city_coordinate[0][cityid-1]]
+	map.setView(city_coordinates,6);
+	document.getElementById("city_name_input").value = city_name
+	console.log($('#city_name_input').attr('value'))
+	
+	$('#reset_botton').click();
+	$('#cityID').text(cityid);
+	$('#cityName').text(city_name);
+	$('#cityCountry').text(city_country);
+	$('#cityType').text(city_type);
+  });  
+//点击City Tree的效果设置  
+$('#city_tree_button').click(function() {
+	$('#img_tree').attr('src','img/tree_map/'+(cityid-1)+'.png')
+	$('#img_1975').attr('src','img/13810_1975jpg/'+cityid+'.jpg')
+	$('#img_1990').attr('src','img/13810_1990jpg/'+cityid+'.jpg')
+	$('#img_2000').attr('src','img/13810_2000jpg/'+cityid+'.jpg')
+	$('#img_2015').attr('src','img/13810_2015jpg/'+cityid+'.jpg')
+	document.getElementById("echart").style.display="none";
+	document.getElementById("near_cities").style.display="none";
+	document.getElementById("city_tree").style.display="inline";
+  });  
+//点击的Top 9 nearest cities效果设置  
+$('#near_cities_button').click(function() {
+	near_cities = near_cities_array[cityid-1];
+		for (var i=0;i<9;i++)
+		{
+			$('#img0'+(i+1).toString()).attr('src','img/13810_2015jpg/'+near_cities[i]+'.jpg')
+			var near_city_id = near_cities[i];
+			var near_city_name = city_name_array[near_city_id-1];
+			var near_city_country = city_country_array[near_city_id-1];
+			var near_city_type = city_type_array[near_city_id-1];
+			$('#near_city0'+(i+1).toString()).text('changed')
+			$('#near_city0'+(i+1).toString()+'_id').text(near_city_id)
+			$('#near_city0'+(i+1).toString()+'_name').text(near_city_name)
+			$('#near_city0'+(i+1).toString()+'_country').text(near_city_country)
+			$('#near_city0'+(i+1).toString()+'_type').text(near_city_type)
+			
+			var near_city_title = near_city_id.toString()+' '+near_city_name.toString()
+			$('#near_city_title0'+(i+1).toString()).text(near_city_title)
+		}	
+	document.getElementById("echart").style.display="none";
+	document.getElementById("city_tree").style.display="none";
+	document.getElementById("near_cities").style.display="inline";
+  });    
+//点击Boxplot Analysis效果设置  
+$('#boxplot_botton').click(function() {
+	near_cities = near_cities_array[cityid-1];
+	var boxplot_raw_data = new Array();
+	//生成各类指标的数据，数组切片均生成二维数组
+	for (j=0;j<10;j++){
+		temp_20 = new Array();
+		temp_20.push(raw_data[j][cityid-1])
+		for (i=0;i<19;i++){		
+		temp_20.push(raw_data[j][near_cities[i]-1]);			
+	};
+		boxplot_raw_data.push(temp_20);	
+	};
+	var boxplot_raw_data_population = boxplot_raw_data.slice(0,4);
+	var boxplot_raw_data_area = boxplot_raw_data.slice(4,8);	
+	var boxplot_raw_data_gdp = boxplot_raw_data.slice(8,9);
+	var boxplot_raw_data_pm = boxplot_raw_data.slice(9,10);
+	//箱型图中不能含有空值，筛选GDP、PM2.5非空值	
+	function isNotNone(element, index, array) {
+		return (element>=0);}
+	var temp_gdp = boxplot_raw_data_gdp[0].filter(isNotNone);	
+	var temp_pm = boxplot_raw_data_pm[0].filter(isNotNone);
+	var filtered_boxplot_raw_data_gdp = new Array(temp_gdp);
+	var filtered_boxplot_raw_data_pm = new Array(temp_pm);	
+	
+	
+	var myChart = echarts.init(document.getElementById('echart'));	
+	var box_plot_data_population = echarts.dataTool.prepareBoxplotData(boxplot_raw_data_population);
+	console.log(boxplot_raw_data_population)
+	console.log(typeof(boxplot_raw_data_population[0][0]))
+	console.log(box_plot_data_population)
+	var box_plot_data_area = echarts.dataTool.prepareBoxplotData(boxplot_raw_data_area);
+	var box_plot_data_gdp = echarts.dataTool.prepareBoxplotData(filtered_boxplot_raw_data_gdp);	
+	var box_plot_data_pm = echarts.dataTool.prepareBoxplotData(filtered_boxplot_raw_data_pm);
+
+	myChart.setOption({
+    title: [
+        {
+            text: 'Statistics of 20 nearest cities',
+            left: 'center',
+        textStyle: {
+            color: '#fff',
+            fontSize: 20
+        }				
+        },
+		        {
+            text: 'Population of four years',
+            left: '15%',
+			top:'3%',
+        textStyle: {
+            color: '#fff',
+            fontSize: 15
+        }			
+        },
+				{
+            text: 'Area of four years',
+            right: '15%',
+			top:'3%',
+        textStyle: {
+            color: '#fff',
+            fontSize: 15
+        }			
+        },
+						{
+            text: 'GDP of 2015',
+            left: '15%',
+			top:'50%',
+        textStyle: {
+            color: '#fff',
+            fontSize: 15
+        }			
+        },
+						{
+            text: 'PM2.5 of 2015',
+            right: '15%',
+			top:'50%',
+        textStyle: {
+            color: '#fff',
+            fontSize: 15
+        }			
+        },
+    ],
+    legend: {data:[city_name],
+			 top:'4%',
+			 left:'40%', 
+			 textStyle: {
+				color: '#fff',
+				fontSize: 12
+			}	
+		},
+    tooltip: {
+        trigger: 'item',
+        axisPointer: {
+            type: 'shadow'
+        }
+    },
+	//通过grid设置四个箱型图的位置
+	//最后一个grid不用于画图，仅用于添加背景色
+    grid:  [
+        {x: '7%', y: '7%', width: '38%', height: '38%'},
+        {x2: '7%', y: '7%', width: '38%', height: '38%'},
+        {x: '7%', y2: '7%', width: '38%', height: '38%'},
+        {x2: '7%', y2: '7%', width: '38%', height: '38%'},
+		{top:'0%',left:'0%',width: '100%', height: '100%',backgroundColor: 'rgba(18,89,147,0.8)',show: true}
+    ],	
+
+	
+    xAxis: [{
+		gridIndex: 0,
+        type: 'category',
+        data: ['1975','1990','2000','2015'],
+        boundaryGap: true,
+        nameGap: 30,
+        splitArea: {
+            show: false
+        },
+        axisLabel: {
+            formatter: '{value}',
+			textStyle: {
+                color: '#fff'
+            }
+        },
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },			
+        splitLine: {
+            show: false
+        }
+    },{
+		gridIndex: 1,
+        type: 'category',
+        data: ['1975','1990','2000','2015'],
+        boundaryGap: true,
+        nameGap: 30,
+        splitArea: {
+            show: false
+        },
+        axisLabel: {
+            formatter: '{value}',
+			textStyle: {
+               color: '#fff'
+            },
+	        },
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },			
+        splitLine: {
+            show: false
+        }
+    },{
+		gridIndex: 2,
+        type: 'category',
+        data: ['2015'],
+        boundaryGap: true,
+        nameGap: 30,
+        splitArea: {
+            show: false
+        },
+        axisLabel: {
+            formatter: '{value}',
+			textStyle: {
+               color: '#fff'
+            },
+        },
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },		
+        splitLine: {
+            show: false
+        }
+    },{
+		gridIndex: 3,
+        type: 'category',
+        data: ['2015'],
+        boundaryGap: true,
+        nameGap: 30,
+        splitArea: {
+            show: false
+        },
+        axisLabel: {
+            formatter: '{value}',
+			textStyle: {
+               color: '#fff'
+            }			
+        },
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },			
+        splitLine: {
+            show: false
+        }
+    }],
+    yAxis: [{
+		gridIndex: 0,
+        type: 'value',
+        name: 'thousand persons',
+        splitArea: {
+            show: true
+        },
+        axisLabel: {
+			textStyle: {
+               color: '#fff'
+            }			
+        },
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },		
+    },{
+		gridIndex: 1,
+        type: 'value',
+        name: 'k㎡',
+        splitArea: {
+            show: true
+        },
+        axisLabel: {
+			textStyle: {
+               color: '#fff'
+            }			
+        },	
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },		
+    },{
+		gridIndex: 2,
+        type: 'value',
+        name: 'million dollor',
+        splitArea: {
+            show: true
+        },
+        axisLabel: {
+			textStyle: {
+               color: '#fff'
+            }			
+        },	
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },		
+    },{
+		gridIndex: 3,
+        type: 'value',
+        name: 'ug/m³',
+        splitArea: {
+            show: true
+        },
+        axisLabel: {
+			textStyle: {
+               color: '#fff'
+            }			
+        },	
+        axisLine: {
+            lineStyle: {
+                color: '#fff'
+            }
+        },		
+    }],
+    //通过指定各series的xAxis与yAxis控制其所在位置
+	series: [
+			{
+			xAxisIndex: 0,
+            yAxisIndex: 0,
+            name:city_name,
+            type:'line',
+			zlevel:2,	
+            data:[boxplot_raw_data_population[0][0],boxplot_raw_data_population[1][0],boxplot_raw_data_population[2][0],boxplot_raw_data_population[3][0]]
+        },
+        {
+		    xAxisIndex: 0,
+            yAxisIndex: 0,
+            name: 'boxplot',
+            type: 'boxplot',
+            data: box_plot_data_population.boxData,
+            tooltip: {
+                formatter: function (param) {
+                    return [
+                        'Population ' + param.name + ': ',
+                        'upper: ' + param.data[5].toFixed(0),
+                        'Q3: ' + param.data[4].toFixed(0),
+                        'median: ' + param.data[3].toFixed(0),
+                        'Q1: ' + param.data[2].toFixed(0),
+                        'lower: ' + param.data[1].toFixed(0)
+                    ].join('<br/>')
+                }
+            }
+        },
+        {
+		    xAxisIndex: 0,
+            yAxisIndex: 0,
+            name: 'outlier',
+            type: 'scatter',
+            data: box_plot_data_population.outliers
+        },
+					{
+			xAxisIndex: 1,
+            yAxisIndex: 1,
+            name:city_name,
+            type:'line',
+			zlevel:2,	
+            data:[boxplot_raw_data_area[0][0],boxplot_raw_data_area[1][0],boxplot_raw_data_area[2][0],boxplot_raw_data_area[3][0]]
+        },
+        {
+		    xAxisIndex: 1,
+            yAxisIndex: 1,
+            name: 'boxplot',
+            type: 'boxplot',
+            data: box_plot_data_area.boxData,
+            tooltip: {
+                formatter: function (param) {
+                    return [
+                        'Area ' + param.name + ': ',
+                        'upper: ' + param.data[5].toFixed(0),
+                        'Q3: ' + param.data[4].toFixed(0),
+                        'median: ' + param.data[3].toFixed(0),
+                        'Q1: ' + param.data[2].toFixed(0),
+                        'lower: ' + param.data[1].toFixed(0)
+                    ].join('<br/>')
+                }
+            }
+        },
+        {
+		    xAxisIndex: 1,
+            yAxisIndex: 1,
+            name: 'outlier',
+            type: 'scatter',
+            data: box_plot_data_area.outliers
+        },
+							{
+			xAxisIndex: 2,
+            yAxisIndex: 2,
+            name:city_name,
+            type:'line',
+			zlevel:2,	
+            data:[boxplot_raw_data_gdp[0][0]]
+        },
+        {
+		    xAxisIndex: 2,
+            yAxisIndex: 2,
+            name: 'boxplot',
+            type: 'boxplot',
+            data: box_plot_data_gdp.boxData,
+            tooltip: {
+                formatter: function (param) {
+                    return [
+                        'GDP ' + param.name + ': ',
+                        'upper: ' + param.data[5].toFixed(0),
+                        'Q3: ' + param.data[4].toFixed(0),
+                        'median: ' + param.data[3].toFixed(0),
+                        'Q1: ' + param.data[2].toFixed(0),
+                        'lower: ' + param.data[1].toFixed(0)
+                    ].join('<br/>')
+                }
+            }
+        },
+        {
+		    xAxisIndex: 2,
+            yAxisIndex: 2,
+            name: 'outlier',
+            type: 'scatter',
+            data: box_plot_data_gdp.outliers
+        },							{
+			xAxisIndex: 3,
+            yAxisIndex: 3,
+            name:city_name,
+            type:'line',
+			zlevel:2,	
+            data:[boxplot_raw_data_pm[0][0]]
+        },
+        {
+		    xAxisIndex: 3,
+            yAxisIndex: 3,
+            name: 'boxplot',
+            type: 'boxplot',
+            data: box_plot_data_pm.boxData,
+            tooltip: {
+                formatter: function (param) {
+                    return [
+                        'PM2.5 ' + param.name + ': ',
+                        'upper: ' + param.data[5].toFixed(0),
+                        'Q3: ' + param.data[4].toFixed(0),
+                        'median: ' + param.data[3].toFixed(0),
+                        'Q1: ' + param.data[2].toFixed(0),
+                        'lower: ' + param.data[1].toFixed(0)
+                    ].join('<br/>')
+                }
+            }
+        },
+        {
+		    xAxisIndex: 3,
+            yAxisIndex: 3,
+            name: 'outlier',
+            type: 'scatter',
+            data: box_plot_data_pm.outliers
+        },
+    ]
+});
+	document.getElementById("near_cities").style.display="none";
+	document.getElementById("city_tree").style.display="none";
+	document.getElementById("echart").style.display="inline";
+  }); 
+//点击Reset效果设置
+$('#reset_botton').click(function() {
+	document.getElementById("near_cities").style.display="none";
+	document.getElementById("city_tree").style.display="none";
+	document.getElementById("echart").style.display="none";
+})  
+</script>
+</body>
+</html>

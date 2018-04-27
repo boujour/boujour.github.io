@@ -1,0 +1,183 @@
+	option={
+		legend: {data:[city_name],top:'5%'},
+	    series: [
+			{
+            name:city_name,
+            type:'line',
+			zlevel:2,			
+            data:[boxplot_raw_data[0][0],raw_data[1][0],raw_data[2][0],raw_data[3][0]]
+        },
+        {
+            name: 'boxplot',
+            type: 'boxplot',
+            data: box_plot_data.boxData,
+            tooltip: {
+                formatter: function (param) {
+                    return [
+                        'Experiment ' + param.name + ': ',
+                        'upper: ' + param.data[5],
+                        'Q3: ' + param.data[4],
+                        'median: ' + param.data[3],
+                        'Q1: ' + param.data[2],
+                        'lower: ' + param.data[1]
+                    ].join('<br/>')
+                }
+            }
+        },
+        {
+            name: 'outlier',
+            type: 'scatter',
+            data: box_plot_data.outliers
+        }
+    ]
+	}
+	
+	
+option = {
+    title: [
+        {
+            text: 'Statistics of 20 nearest cities',
+            left: 'center',
+        },
+        {
+            text: 'upper: Q3 + 1.5 * IRQ \nlower: Q1 - 1.5 * IRQ',
+            borderColor: '#999',
+            borderWidth: 1,
+            textStyle: {
+                fontSize: 14
+            },
+            left: '10%',
+            top: '90%'
+        }
+    ],
+    legend: {data:['Shanghai'],top:'5%'},
+    tooltip: {
+        trigger: 'item',
+        axisPointer: {
+            type: 'shadow'
+        }
+    },
+    grid: {
+        left: '10%',
+        right: '10%',
+        bottom: '15%'
+    },
+    xAxis: {
+        type: 'category',
+        data: ['1975','1990','2000','2015'],
+        boundaryGap: true,
+        nameGap: 30,
+        splitArea: {
+            show: false
+        },
+        axisLabel: {
+            formatter: '{value}'
+        },
+        splitLine: {
+            show: false
+        }
+    },
+    yAxis: {
+        type: 'value',
+        name: 'persons',
+        splitArea: {
+            show: true
+        }
+    },
+    series: [
+			{
+            name:'Shanghai',
+            type:'line',
+			zlevel:2,			
+            data:[shanghai_raw_data[0][0],shanghai_raw_data[1][0],shanghai_raw_data[2][0],shanghai_raw_data[3][0]]
+        },
+        {
+            name: 'boxplot',
+            type: 'boxplot',
+            data: box_plot_data.boxData,
+            tooltip: {
+                formatter: function (param) {
+                    return [
+                        'Experiment ' + param.name + ': ',
+                        'upper: ' + param.data[5],
+                        'Q3: ' + param.data[4],
+                        'median: ' + param.data[3],
+                        'Q1: ' + param.data[2],
+                        'lower: ' + param.data[1]
+                    ].join('<br/>')
+                }
+            }
+        },
+        {
+            name: 'outlier',
+            type: 'scatter',
+            data: box_plot_data.outliers
+        }
+    ]
+};
+
+if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+
+
+	if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+};	
+
+
+<div id='basic_info' style="display: none;position:absolute ; z-index:0;left:0px;top:300px">`
+<p style="z-index:3; position:absolute; left:0px;top:0px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'IDIcon'>ID:</p>
+<p style="z-index:3; position:absolute; left:100px;top:0px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'cityID'>None</p>
+<p style="z-index:3; position:absolute; left:0px;top:20px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'nameIcon'>Name:</p>
+<p style="z-index:3; position:absolute; left:100px;top:20px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'cityName'>None</p>
+<p style="z-index:3; position:absolute; left:0px;top:40px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'countryIcon'>Country:</p>
+<p style="z-index:3; position:absolute; left:100px;top:40px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'cityCountry'>None</p>
+<p style="z-index:3; position:absolute; left:0px;top:60px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'typeIcon'>Type:</p>
+<p style="z-index:3; position:absolute; left:100px;top:60px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;" id = 'cityType'>None</p>
+</div>
+
+
+<p id='field_name' style='left:0px;top:0px;color:white'>ID  Name  Country  Type</p>
+<p id='near_city01' style='left:0px;top:0px;color:white';>None</p>
+<p id='near_city02' style='left:0px;top:0px;color:white'>None</p>
+<p id='near_city03' style='left:0px;top:0px;color:white'>None</p>
+<p id='near_city04' style='left:0px;top:0px;color:white'>None</p>
+<p id='near_city05' style='left:0px;top:0px;color:white'>None</p>
+<p id='near_city06' style='left:0px;top:0px;color:white'>None</p>
+<p id='near_city07' style='left:0px;top:0px;color:white'>None</p>
+<p id='near_city08' style='left:0px;top:0px;color:white'>None</p>
+<p id='near_city09' style='left:0px;top:0px;color:white'>None</p>
+
+
+function getColor(d) {
+
+	return d == 1 ? '#55AA55' :
+			d == 2 ? '#33CC33' :
+			d == 3  ? '#97F709' :
+			d == 4  ? '#EEEE11' :
+			d == 5   ? '#EE9611' :
+			d == 6   ? '#F73809' :
+			d == 7   ? '#1F2629' :
+						'#FFEDA0';
+}
+
+grades = [1,2,3,4,5,6,7],
+type = ['萌芽型','佝偻型','成长型','膨胀型','成熟型','区域型','衰退型'],
+
+<img src='./img/icon/city_tree.png'id="city_tree_button" class='fonction_button' style="position: absolute; left:0px;top:0px;width:100px;height:100px"</img>
+<img src='./img/icon/similar_city.png'id="near_cities_button" style="position: absolute; left:0px;top:70px;width:100px;height:100px"</img>
+<img src='./img/icon/boxplot.png'id="boxplot_botton" style="position: absolute; left:0px;top:140px;width:100px;height:100px"</img>
+
+<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:35px;top:20px;"</img>
+<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:20px; top:40px" >City Tree </p>
+
+	var city_icon = L.marker([39.61, -105.02]);
+	var cities = L.layerGroup([city_icon]);
+	
+		var city_icon = L.marker([39.61, -105.02]);
+	var cities = L.layerGroup([city_icon]);
+	var overlayMaps = {
+    "Cities": cities
+};
+	L.control.layers(overlayMaps).addTo(map);
