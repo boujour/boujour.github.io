@@ -23,8 +23,6 @@
 		.near_city_info_field {font-weight:bold}
 		.basic_info_data{font-size:12px}
 		.fonction_button{box-shadow:2px 2px 3px #aaaaaa;}
-		.near_city_title{top:40vh}
-		.
 
 	</style>
 
@@ -105,7 +103,7 @@
 <p style="z-index:3; position:absolute; left:430px;top:560px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>2015</p>
 </div>
 
-<div id='near_cities' style="display: none;position: absolute; z-index:0;right:0%;top:6vh;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
+<div id='near_cities' style="display: none;position: absolute; z-index:0;right:0%;top:0.06vh;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
 <table border="0" cellspacing="5" id='near_cities_info' style="position:absolute ; z-index:0;left:0px;top:0%;height:40%";>
   <tr>
     <td style="font-family:微软雅黑;color:white;" id = 'filed_name_id' class = 'near_city_info_field'>ID</td>
@@ -169,18 +167,18 @@
   </tr>  
 </table>
 
-<p id='near_city_title01' class='near_city_title' style='position:absolute;left:10px;top:39vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title02' class='near_city_title' style='position:absolute;left:130px;top:39vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title03' class='near_city_title' style='position:absolute;left:250px;top:39vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title04' class='near_city_title' style='position:absolute;left:10px;top:51vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title05' class='near_city_title' style='position:absolute;left:130px;top:51vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title06' class='near_city_title' style='position:absolute;left:250px;top:51vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title07' class='near_city_title' style='position:absolute;left:10px;top:63vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title08' class='near_city_title' style='position:absolute;left:130px;top:63vh;font-size:8px;color:white'>title</p>
-<p id='near_city_title09' class='near_city_title' style='position:absolute;left:250px;top:63vh;font-size:8px;color:white'>title</p>
-<img id='img01' class='near_city_image' style="position:absolute;left:0px;top:420px;width:10vh;height:100px" src="img/13810_2015jpg/1.jpg"></img>
-<img id='img02' class='near_city_image' style="position:absolute;left:120px;top:420px;width:10vh;height:100px" src="img/13810_2015jpg/2.jpg"></img>
-<img id='img03' class='near_city_image' style="position:absolute;left:240px;top:420px;width:10vh;height:100px" src="img/13810_2015jpg/3.jpg"></img>
+<p id='near_city_title01' class='near_city_title' style='position:absolute;left:10px;top:390px;font-size:8px;color:white'>title</p>
+<p id='near_city_title02' class='near_city_title' style='position:absolute;left:130px;top:390px;font-size:8px;color:white'>title</p>
+<p id='near_city_title03' class='near_city_title' style='position:absolute;left:250px;top:390px;font-size:8px;color:white'>title</p>
+<p id='near_city_title04' class='near_city_title' style='position:absolute;left:10px;top:510px;font-size:8px;color:white'>title</p>
+<p id='near_city_title05' class='near_city_title' style='position:absolute;left:130px;top:510px;font-size:8px;color:white'>title</p>
+<p id='near_city_title06' class='near_city_title' style='position:absolute;left:250px;top:510px;font-size:8px;color:white'>title</p>
+<p id='near_city_title07' class='near_city_title' style='position:absolute;left:10px;top:630px;font-size:8px;color:white'>title</p>
+<p id='near_city_title08' class='near_city_title' style='position:absolute;left:130px;top:630px;font-size:8px;color:white'>title</p>
+<p id='near_city_title09' class='near_city_title' style='position:absolute;left:250px;top:630px;font-size:8px;color:white'>title</p>
+<img id='img01' class='near_city_image' style="position:absolute;left:0px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
+<img id='img02' class='near_city_image' style="position:absolute;left:120px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/2.jpg"></img>
+<img id='img03' class='near_city_image' style="position:absolute;left:240px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/3.jpg"></img>
 <img id='img04' class='near_city_image' style="position:absolute;left:0px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/4.jpg"></img>
 <img id='img05' class='near_city_image' style="position:absolute;left:120px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/5.jpg"></img>
 <img id='img06' class='near_city_image' style="position:absolute;left:240px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/6.jpg"></img>
@@ -316,10 +314,7 @@
 		map.setView(city_coordinates,6);	
 		map.removeLayer(marker)
 		marker = L.marker(city_coordinates,{title:city_name, opacity: 1});
-		map.addLayer(marker);	
-		$('#reset_botton').click();		
-		
-		
+		map.addLayer(marker);		
 		$('#cityID').text(cityid);
 		$('#cityName').text(city_name);
 		$('#cityCountry').text(city_country);
