@@ -93,7 +93,7 @@
 <script type="text/javascript" src="data/near_cities.js"></script>
 <script type="text/javascript" src="data/city_coordinate.js"></script>
 
-<div id='city_tree' style="display: none;position: absolute; z-index:0;right:0%;top:60px;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
+<div id='city_tree' style="display: none;position: absolute; z-index:0;right:0%;top:6vh;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
 <img id='img_tree' style="position:absolute;left:0px;top:200px;width:400px;height:400px" src="img/tree_map/1.png"></img>
 <img id='img_1975' style="position:absolute;left:400px;top:200px;width:100px;height:100px" src="img/13810_1975jpg/1.jpg"></img>
 <img id='img_1990' style="position:absolute;left:400px;top:300px;width:100px;height:100px" src="img/13810_1990jpg/1.jpg"></img>
@@ -178,20 +178,20 @@
 <p id='near_city_title07' class='near_city_title' style='position:absolute;left:10px;top:63vh;font-size:8px;color:white'>title</p>
 <p id='near_city_title08' class='near_city_title' style='position:absolute;left:130px;top:63vh;font-size:8px;color:white'>title</p>
 <p id='near_city_title09' class='near_city_title' style='position:absolute;left:250px;top:63vh;font-size:8px;color:white'>title</p>
-<img id='img01' class='near_city_image' style="position:absolute;left:0px;top:42vh;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
-<img id='img02' class='near_city_image' style="position:absolute;left:120px;top:42vh;width:100px;height:100px" src="img/13810_2015jpg/2.jpg"></img>
-<img id='img03' class='near_city_image' style="position:absolute;left:240px;top:42vh;width:100px;height:100px" src="img/13810_2015jpg/3.jpg"></img>
-<img id='img04' class='near_city_image' style="position:absolute;left:0px;top:54vh;width:100px;height:100px" src="img/13810_2015jpg/4.jpg"></img>
-<img id='img05' class='near_city_image' style="position:absolute;left:120px;top:54vh;width:100px;height:100px" src="img/13810_2015jpg/5.jpg"></img>
-<img id='img06' class='near_city_image' style="position:absolute;left:240px;top:54vh;width:100px;height:100px" src="img/13810_2015jpg/6.jpg"></img>
-<img id='img07' class='near_city_image' style="position:absolute;left:0px;top:66vh;width:100px;height:100px" src="img/13810_2015jpg/7.jpg"></img>
-<img id='img08' class='near_city_image' style="position:absolute;left:120px;top:66vh;width:100px;height:100px" src="img/13810_2015jpg/8.jpg"></img>
-<img id='img09' class='near_city_image' style="position:absolute;left:240px;top:66vh;width:100px;height:100px" src="img/13810_2015jpg/9.jpg"></img>
+<img id='img01' class='near_city_image' style="position:absolute;left:0px;top:41vh;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
+<img id='img02' class='near_city_image' style="position:absolute;left:120px;top:41vh;width:100px;height:100px" src="img/13810_2015jpg/2.jpg"></img>
+<img id='img03' class='near_city_image' style="position:absolute;left:240px;top:41vh;width:100px;height:100px" src="img/13810_2015jpg/3.jpg"></img>
+<img id='img04' class='near_city_image' style="position:absolute;left:0px;top:53vh;width:100px;height:100px" src="img/13810_2015jpg/4.jpg"></img>
+<img id='img05' class='near_city_image' style="position:absolute;left:120px;top:53vh;width:100px;height:100px" src="img/13810_2015jpg/5.jpg"></img>
+<img id='img06' class='near_city_image' style="position:absolute;left:240px;top:53vh;width:100px;height:100px" src="img/13810_2015jpg/6.jpg"></img>
+<img id='img07' class='near_city_image' style="position:absolute;left:0px;top:65vh;width:100px;height:100px" src="img/13810_2015jpg/7.jpg"></img>
+<img id='img08' class='near_city_image' style="position:absolute;left:120px;top:65vh;width:100px;height:100px" src="img/13810_2015jpg/8.jpg"></img>
+<img id='img09' class='near_city_image' style="position:absolute;left:240px;top:65vh;width:100px;height:100px" src="img/13810_2015jpg/9.jpg"></img>
 </div>
 </div>
 
 <div id ="echart" style="display: none;z-index:0; position:absolute; right:0px;top:60px;width :80vh;height:80vh;background-color:rgba(18,89,147,0.8)">
-
+alert
 </div>
 <script type="text/javascript">
 	//城市基本信息导入
@@ -309,7 +309,6 @@
 		city_name = city_name_array[position]
 		var city_country = city_country_array[position]
 		var city_type = city_type_array[position]
-		alert(city_name);
 		document.getElementById("city_name_input").value = city_name
 		
 		var city_coordinates = [city_coordinate[1][cityid-1],city_coordinate[0][cityid-1]]
@@ -372,7 +371,7 @@ $('#search_name_button').click(function() {
 		city_name = city_name_array[position]
 		var city_country = city_country_array[position]
 		var city_type = city_type_array[position]
-		alert(input_info);		
+	
 	}
 	else{
 		var position = city_name_array.indexOf(input_info)
@@ -380,7 +379,6 @@ $('#search_name_button').click(function() {
 		city_name = city_name_array[position]
 		var city_country = city_country_array[position]
 		var city_type = city_type_array[position]
-		alert(input_info);	
 	}
 	var city_coordinates = [city_coordinate[1][cityid-1],city_coordinate[0][cityid-1]]
 	map.setView(city_coordinates,6);
