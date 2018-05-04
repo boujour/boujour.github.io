@@ -24,7 +24,7 @@
 		.basic_info_data{font-size:12px}
 		.fonction_button{box-shadow:2px 2px 3px #aaaaaa;}
 		.near_city_title{font-size:1vh}
-		.near_city_image{height:10vh}
+		.near_city_image{height:8vh}
 
 	</style>
 
@@ -345,7 +345,7 @@ proj4.defs("urn:ogc:def:crs:EPSG::3395", "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0
 
 		var div = L.DomUtil.create('div', 'info legend'),
 			grades = [6,5,4,3,1,2,7],
-			type = ['区域型','成熟型','膨胀型','成长型','萌芽型','佝偻型','衰退型'],
+			type = ['区域型','成熟型','发育型','成长型','萌芽型','佝偻型','衰退型'],
 			labels = [],
 			value;
 		for (var i = 0; i < grades.length; i++) {
