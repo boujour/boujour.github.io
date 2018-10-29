@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/d3/4.9.1/d3.js"></script>
+	<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+
 	<style>
 		html, body {
 			height: 100%;
@@ -22,7 +25,9 @@
 		}
 		.near_city_info_field {font-weight:bold}
 		.basic_info_data{font-size:12px}
-		.fonction_button{box-shadow:2px 2px 3px #aaaaaa;}
+		.function_button{box-shadow:2px 2px 3px #aaaaaa;}
+		.near_city_title{font-size:1vh}
+		.near_city_image{height:8vh}
 
 	</style>
 
@@ -62,20 +67,24 @@
 </table>
 
 <div style="position: absolute; left:20px;top:150px;">
-	<div id="city_tree_button" class='fonction_button' style="position: absolute; left:0px;top:0px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
+	<div id="city_tree_button" class='function_button' style="position: absolute; left:0px;top:0px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
 		<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:30px;top:15px;"</img>
 		<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:20px; top:40px" >City Tree </p>
 	</div>
-	<div id="near_cities_button" class='fonction_button' style="position: absolute; left:0px;top:90px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
+	<div id="near_cities_button" class='function_button' style="position: absolute; left:0px;top:90px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
 		<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:30px;top:15px;"</img>
 		<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:10px; top:40px" >Similar Cities</p>
 	</div>
-	<div id="boxplot_botton" class='fonction_button' style="position: absolute; left:0px;top:180px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
+	<div id="boxplot_button" class='function_button' style="position: absolute; left:0px;top:180px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
 		<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:30px;top:15px;"</img>
 		<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:25px; top:40px" >Boxplot </p>
 	</div>
+	<div id="oxford_button" class='function_button' style="position: absolute; left:0px;top:270px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
+		<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:30px;top:15px;"</img>
+		<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:25px; top:40px" >Oxford</p>
+	</div>
 
-<button style="z-index:3; position:absolute; left:0px;top:270px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px" id = 'reset_botton'>Close</button>
+<button style="z-index:3; position:absolute; left:0px;top:360px;font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px" id = 'reset_botton'>Close</button>
 </div>
 
 <script type="text/javascript" src="js/jquery.min.js"></script>
@@ -88,22 +97,26 @@
 <script type="text/javascript" src="data/box_plot.js"></script>
 <script type="text/javascript" src="data/box_plot_shanghai.js"></script>
 <script type="text/javascript" src="data/basic_info.js"></script>
-<script type="text/javascript" src="data/near_cities.js"></script>
+<script type="text/javascript" src="data/ten_thousand/near_cities.js"></script>
 <script type="text/javascript" src="data/city_coordinate.js"></script>
+<script type="text/javascript" src="data/oxford/near_cities.js"></script>
+<script type="text/javascript" src="data/oxford/city_quarter.js"></script>	   
+<script type="text/javascript" src="data/oxford/city_name.js"></script>
+<script type="text/javascript" src="data/oxford/keyword_df.js"></script>
 
-<div id='city_tree' style="display: none;position: absolute; z-index:0;right:0%;top:60px;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
+<div id='city_tree' style="display: none;position: absolute; z-index:0;right:0%;top:6vh;width :40%;height:80%;background-color:rgba(18,89,147,0.8)">
 <img id='img_tree' style="position:absolute;left:0px;top:200px;width:400px;height:400px" src="img/tree_map/1.png"></img>
 <img id='img_1975' style="position:absolute;left:400px;top:200px;width:100px;height:100px" src="img/13810_1975jpg/1.jpg"></img>
 <img id='img_1990' style="position:absolute;left:400px;top:300px;width:100px;height:100px" src="img/13810_1990jpg/1.jpg"></img>
 <img id='img_2000' style="position:absolute;left:400px;top:400px;width:100px;height:100px" src="img/13810_2000jpg/1.jpg"></img>
 <img id='img_2015' style="position:absolute;left:400px;top:500px;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
-<p style="z-index:3; position:absolute; left:430px;top:260px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>1975</p>
-<p style="z-index:3; position:absolute; left:430px;top:360px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>1990</p>
-<p style="z-index:3; position:absolute; left:430px;top:460px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>2000</p>
-<p style="z-index:3; position:absolute; left:430px;top:560px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>2015</p>
+<p style="z-index:3; position:absolute; left:440px;top:270px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>1975</p>
+<p style="z-index:3; position:absolute; left:440px;top:370px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>1990</p>
+<p style="z-index:3; position:absolute; left:440px;top:470px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>2000</p>
+<p style="z-index:3; position:absolute; left:440px;top:570px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>2015</p>
 </div>
 
-<div id='near_cities' style="display: none;position: absolute; z-index:0;right:0%;top:0.06vh;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
+<div id='near_cities' style="display: none;position: absolute; z-index:0;right:0%;top:6vh;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
 <table border="0" cellspacing="5" id='near_cities_info' style="position:absolute ; z-index:0;left:0px;top:0%;height:40%";>
   <tr>
     <td style="font-family:微软雅黑;color:white;" id = 'filed_name_id' class = 'near_city_info_field'>ID</td>
@@ -167,30 +180,34 @@
   </tr>  
 </table>
 
-<p id='near_city_title01' class='near_city_title' style='position:absolute;left:10px;top:390px;font-size:8px;color:white'>title</p>
-<p id='near_city_title02' class='near_city_title' style='position:absolute;left:130px;top:390px;font-size:8px;color:white'>title</p>
-<p id='near_city_title03' class='near_city_title' style='position:absolute;left:250px;top:390px;font-size:8px;color:white'>title</p>
-<p id='near_city_title04' class='near_city_title' style='position:absolute;left:10px;top:510px;font-size:8px;color:white'>title</p>
-<p id='near_city_title05' class='near_city_title' style='position:absolute;left:130px;top:510px;font-size:8px;color:white'>title</p>
-<p id='near_city_title06' class='near_city_title' style='position:absolute;left:250px;top:510px;font-size:8px;color:white'>title</p>
-<p id='near_city_title07' class='near_city_title' style='position:absolute;left:10px;top:630px;font-size:8px;color:white'>title</p>
-<p id='near_city_title08' class='near_city_title' style='position:absolute;left:130px;top:630px;font-size:8px;color:white'>title</p>
-<p id='near_city_title09' class='near_city_title' style='position:absolute;left:250px;top:630px;font-size:8px;color:white'>title</p>
-<img id='img01' class='near_city_image' style="position:absolute;left:0px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
-<img id='img02' class='near_city_image' style="position:absolute;left:120px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/2.jpg"></img>
-<img id='img03' class='near_city_image' style="position:absolute;left:240px;top:420px;width:100px;height:100px" src="img/13810_2015jpg/3.jpg"></img>
-<img id='img04' class='near_city_image' style="position:absolute;left:0px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/4.jpg"></img>
-<img id='img05' class='near_city_image' style="position:absolute;left:120px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/5.jpg"></img>
-<img id='img06' class='near_city_image' style="position:absolute;left:240px;top:540px;width:100px;height:100px" src="img/13810_2015jpg/6.jpg"></img>
-<img id='img07' class='near_city_image' style="position:absolute;left:0px;top:660px;width:100px;height:100px" src="img/13810_2015jpg/7.jpg"></img>
-<img id='img08' class='near_city_image' style="position:absolute;left:120px;top:660px;width:100px;height:100px" src="img/13810_2015jpg/8.jpg"></img>
-<img id='img09' class='near_city_image' style="position:absolute;left:240px;top:660px;width:100px;height:100px" src="img/13810_2015jpg/9.jpg"></img>
+<p id='near_city_title01' class='near_city_title' style='position:absolute;left:1vh;top:39vh;color:white'>title</p>
+<p id='near_city_title02' class='near_city_title' style='position:absolute;left:13vh;top:39vh;color:white'>title</p>
+<p id='near_city_title03' class='near_city_title' style='position:absolute;left:25vh;top:39vh;;color:white'>title</p>
+<p id='near_city_title04' class='near_city_title' style='position:absolute;left:1vh;top:51vh;color:white'>title</p>
+<p id='near_city_title05' class='near_city_title' style='position:absolute;left:13vh;top:51vh;color:white'>title</p>
+<p id='near_city_title06' class='near_city_title' style='position:absolute;left:25vh;top:51vh;color:white'>title</p>
+<p id='near_city_title07' class='near_city_title' style='position:absolute;left:1vh;top:63vh;color:white'>title</p>
+<p id='near_city_title08' class='near_city_title' style='position:absolute;left:13vh;top:63vh;color:white'>title</p>
+<p id='near_city_title09' class='near_city_title' style='position:absolute;left:25vh;top:63vh;color:white'>title</p>
+<img id='img01' class='near_city_image' style="position:absolute;left:0vh;top:42vh;" src="img/13810_2015jpg/1.jpg"></img>
+<img id='img02' class='near_city_image' style="position:absolute;left:12vh;top:42vh;" src="img/13810_2015jpg/2.jpg"></img>
+<img id='img03' class='near_city_image' style="position:absolute;left:24vh;top:42vh" src="img/13810_2015jpg/3.jpg"></img>
+<img id='img04' class='near_city_image' style="position:absolute;left:0vh;top:54vh;" src="img/13810_2015jpg/4.jpg"></img>
+<img id='img05' class='near_city_image' style="position:absolute;left:12vh;top:54vh;" src="img/13810_2015jpg/5.jpg"></img>
+<img id='img06' class='near_city_image' style="position:absolute;left:24vh;top:54vh;" src="img/13810_2015jpg/6.jpg"></img>
+<img id='img07' class='near_city_image' style="position:absolute;left:0vh;top:66vh;" src="img/13810_2015jpg/7.jpg"></img>
+<img id='img08' class='near_city_image' style="position:absolute;left:12vh;top:66vh;" src="img/13810_2015jpg/8.jpg"></img>
+<img id='img09' class='near_city_image' style="position:absolute;left:24vh;top:66vh;" src="img/13810_2015jpg/9.jpg"></img>
 </div>
-</div>
+
 
 <div id ="echart" style="display: none;z-index:0; position:absolute; right:0px;top:60px;width :80vh;height:80vh;background-color:rgba(18,89,147,0.8)">
-
 </div>
+
+<div id='oxford_economics' style="display: none;z-index:0; position:absolute; right:0px;background-color:rgba(255,255,255,0.8)">
+</div>
+
+
 <script type="text/javascript">
 	//城市基本信息导入
 	var index_array = basic_info_data.index
@@ -201,6 +218,17 @@
 	var city_country_array = data_array[3]
 	var position = city_name_array.indexOf('Shanghai')
 	cityid = cityid_array[position]
+	
+	var city_id_array_oxford = new Array()
+	var city_name_array_oxford = new Array()
+	var city_num = city_name_oxford['index'].length
+	for (i=0;i<city_num;i++){
+		city_id_array_oxford[i] = city_name_oxford['data'][i][0]
+		city_name_array_oxford[i] = city_name_oxford['data'][i][1]
+	}
+	position_oxford = city_name_array_oxford.indexOf('Shanghai')
+	city_id_oxford = city_id_array_oxford[position_oxford]
+	
 	var city_name = city_name_array[position]
 	var city_country = city_country_array[position]
 	var city_type = city_type_array[position]
@@ -300,26 +328,29 @@
 	}
 	function linkPicture(e){
 		var id = this.feature.properties.IDt
-		$("#img").attr('src','img/'+id+ '.png');	
 		clicked_cityid = this.feature.properties.ID1;
 		var position = cityid_array.indexOf(parseInt(clicked_cityid))
 		cityid = cityid_array[position]
 		city_name = city_name_array[position]
+		position_oxford = city_name_array_oxford.indexOf(city_name)
+		city_id_oxford = city_id_array_oxford[position_oxford]
+		city_name_oxford = city_name_array_oxford[position_oxford]
+		
 		var city_country = city_country_array[position]
 		var city_type = city_type_array[position]
-		alert(city_name);
 		document.getElementById("city_name_input").value = city_name
-		
+	
 		var city_coordinates = [city_coordinate[1][cityid-1],city_coordinate[0][cityid-1]]
 		map.setView(city_coordinates,6);	
 		map.removeLayer(marker)
 		marker = L.marker(city_coordinates,{title:city_name, opacity: 1});
-		map.addLayer(marker);		
+		map.addLayer(marker);	
+		$('#reset_botton').click();
+		
 		$('#cityID').text(cityid);
 		$('#cityName').text(city_name);
 		$('#cityCountry').text(city_country);
-		$('#cityType').text(city_type);
-		
+		$('#cityType').text(city_type);		
 	}
 	//设置每个城市地图互动效果
 	function onEachFeature(feature, layer) {
@@ -342,7 +373,7 @@ proj4.defs("urn:ogc:def:crs:EPSG::3395", "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0
 
 		var div = L.DomUtil.create('div', 'info legend'),
 			grades = [6,5,4,3,1,2,7],
-			type = ['区域型','成熟型','膨胀型','成长型','萌芽型','佝偻型','衰退型'],
+			type = ['区域型','成熟型','发育型','成长型','萌芽型','佝偻型','衰退型'],
 			labels = [],
 			value;
 		for (var i = 0; i < grades.length; i++) {
@@ -358,6 +389,404 @@ proj4.defs("urn:ogc:def:crs:EPSG::3395", "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0
 	};
 	legend.addTo(map);
 
+//环形图绘制	
+//按照900*900设计，每个位置都乘以缩放系数s
+var w = 900;
+var s = 1;
+var svg =d3.select("#oxford_economics")
+	.append("svg")
+	.attr("width",w)
+	.attr("height",w);
+function circleLine(){
+	// 黑色细线
+	var black_circle = svg.append("g")
+			.attr("id","black_circle");
+	var d1 =[];
+	for (var i=0; i<100; i++) {
+		d1.push(i);  }
+	black_circle.selectAll("circle")
+		.data(d1)
+		.enter()
+		.append("circle")
+        .attr("cx",w/2)
+        .attr("cy",w/2)
+        .attr("r",function(d,i){
+            return i*3;
+        })
+		.styles({
+			fill: 'none',
+			stroke: 'black',
+			'stroke-width': 0.3,
+			opacity: .5});
+	// 白色细线
+	var white_circle = svg.append("g")
+			.attr("id","white_circle");
+	var d2 =[];
+	for (var i=0; i<10; i++) {
+		d2.push(i);  }
+	white_circle.selectAll("circle")
+		.data(d2)
+		.enter()
+		.append("circle")
+		.attr("cx",w/2)
+		.attr("cy",w/2)
+		.attr("r",function(d,i){
+			return i*30;
+			})
+		.styles({
+			"fill": 'none',
+			"stroke": 'white',
+			"stroke-width": 2
+			});
+}
+
+
+$.getJSON('data/oxford/city_data.json', function (city_data) {
+var total_city_data = city_data.data
+var domain_num = 17
+var keyword_array = city_data.columns.slice(2,19)
+var keyword_id_array = keyword_df['index']
+var keyword_info = keyword_df.data
+var keyword_num = keyword_info.length
+
+console.log('near_cities_oxford:',near_cities_oxford)
+console.log('city_quarter:',city_quarter)
+console.log('city_name_oxford:',city_name_oxford)
+console.log('total_city_data:',total_city_data)
+console.log('keyword_num:',keyword_num)
+var index_array = keyword_info
+var count_data = keyword_df.index
+
+console.log('keyword_info:',keyword_info)
+
+var default_city_id = '277'
+var near_city_num = near_cities_oxford[default_city_id].length
+var Chengdu_quarter = city_quarter[default_city_id]
+
+var Q1_data = []
+var Q2_data = []
+var Q3_data = []
+var target_data = []
+
+for(i=0;i<keyword_num;i++){
+	var keyword = keyword_info[i][2]
+	var keyword_quarter = Chengdu_quarter[keyword]
+	Q1_data.push(keyword_quarter[0])
+	Q2_data.push(keyword_quarter[1])
+	Q3_data.push(keyword_quarter[2])
+	target_data.push(keyword_quarter[3])
+}
+
+var quarter_data_array = [Q1_data,Q2_data,Q3_data]
+
+
+// 初始化得分
+var domainColor = ['#C5242E','#86C144','#646666','#F7B334','#8AD1ED'];
+var detailColor = ['#C5262D','#B85232','#A97735','#9A9F3D','#86C244','#7EAC4D','#769654','#6D7F5C','#646665','#8C7B5A','#B08E4E','#D5A143','#F8B337','#DDBD63','#C2C492','#A8CBBF','#8CC5EC','#9BA5BB','#A87C8C','#B6535C'];
+var color_array = [['#C5262D','#B85232','#A97735','#9A9F3D'],['#86C244','#7EAC4D','#769654','#6D7F5C'],['#646665','#8C7B5A','#B08E4E','#D5A143'],['#F8B337','#DDBD63','#C2C492','#A8CBBF'],['#8CC5EC','#9BA5BB','#A87C8C','#B6535C']];
+//var bar_color = [color_array[0][0],color_array[1][0],color_array[2][0]]
+var bar_color = detailColor
+
+//扇形之间分隔线
+var separationArc = d3.arc()
+			.startAngle(function(d,i) { return Math.PI*2/keyword_num*i-Math.PI/domain_num-0.001; })
+			.endAngle(function(d,i) { return (Math.PI*2/keyword_num*(i)-Math.PI/domain_num)+0.001; })
+			.innerRadius(0)
+			.outerRadius(340);
+function separation_line(){
+	var separation_line = svg.append('g')
+			.attr('transform','translate(450,450)')
+			.attr('id','separation_line')
+    separation_line.selectAll('path')				
+		.data(count_data)
+		.enter()
+		.append('path')
+		.attr('d',separationArc)
+		.attr('id',function(d,i){
+				return 'separation_line'+i;})
+		.style('fill','black')
+}
+separation_line()
+
+//绘制圆环图形图例
+function legend(){
+	var legendArc = d3.arc()
+				.startAngle(-Math.PI/8)
+				.endAngle(Math.PI/8)
+				.innerRadius(50)
+				.outerRadius(55);
+	var legendArc_value = d3.arc()
+				.startAngle(-Math.PI/10)
+				.endAngle(Math.PI/10)
+				.innerRadius(0)
+				.outerRadius(50);
+				
+	var legend = svg.append('g')
+				.attr('transform','translate(50,880)')
+				.attr('id','legend')
+	legend.selectAll('path')						
+			.data([0])
+			.enter()
+			.append('path')
+			.attr('d',legendArc)
+			.attr('id','legend_arc_middle')
+			.style('fill','red')
+			.attr('transform','translate(0,-50)');
+	legend.append('path')		
+			.attr('d',legendArc)
+			.attr('id','legend_arc_quarter')
+			.style('fill','orange')
+			.attr('transform','translate(0,-20)');
+	legend.append('path')		
+			.attr('d',legendArc_value)
+			.attr('id','legend_arc_value')
+			.style('fill','red')
+			.attr('transform','translate(0,0)');
+			
+	legend.selectAll('text')
+			.data([0])
+			.enter()
+			.append('text')
+			.attr('id','legend_text_middle')
+			.attr('font-size','15px')
+			.attr('fill','black')
+			.attr('transform','translate(35,-90)')
+			.text('中位数')
+	legend.append('text')		
+			.attr('id','legend_text_quarter')
+			.attr('font-size','15px')
+			.attr('fill','black')
+			.attr('transform','translate(35,-60)')
+			.text('四分位数')
+	legend.append('text')		
+			.attr('id','legend_text_value')
+			.attr('font-size','15px')
+			.attr('fill','black')
+			.attr('transform','translate(35,-20)')
+			.text('目标城市数值')		
+	legend.append('text')		
+			.attr('id','legend_text_value')
+			.attr('font-size','15px')
+			.attr('fill','black')
+			.attr('transform','translate(0,-120)')
+			.attr('text-anchor','end')
+			.text('图例')
+}
+legend()	
+		
+//绘制背景弧形图像		
+var backgroundArc = d3.arc()
+			.startAngle(function(d,i) { return Math.PI*2/keyword_num*i-Math.PI/domain_num; })
+			.endAngle(function(d,i) { return Math.PI*2/keyword_num*(i+1)-Math.PI/domain_num; })
+			.innerRadius(340)
+			.outerRadius(370);
+		
+var background = svg.append('g')				
+				.attr('transform','translate(450,450)')
+				.attr('id','background_arc')
+background.selectAll('path')				
+			.data(count_data)
+			.enter()
+			.append('path')
+			.attr("d", backgroundArc)
+			.attr("id",function(d,i) {
+					return 'background_arc'+i;})
+			.style("fill", function(d,i) {
+						return detailColor[i];
+					});
+//添加背景关键词文字
+index_length_array = []
+for (i=0;i<keyword_num;i++){
+	index_length = index_array[i][2].length
+	index_length_array.push(index_length)
+}
+console.log('index_length_array:',index_length_array)
+
+var textPath = svg.append('g')				
+				.attr('transform','translate(450,450)')
+				.attr('id','textPath')
+//生成指标文字弧形路径并将其隐藏
+
+//以下参数需要根据关键词数量调整
+var semi_word_angle = 0.5
+var font_size = '15px'
+var text_arc_radius = 350
+
+var pathArc = d3.arc()
+			.startAngle(function(d,i) { return Math.PI*2/keyword_num*i-(Math.PI*index_length_array[i]*semi_word_angle/150)})
+			.endAngle(function(d,i) { return Math.PI*2/keyword_num*(i+1) })
+			.innerRadius(text_arc_radius)
+			.outerRadius(text_arc_radius);
+textPath.selectAll('path')
+			.data(count_data)
+			.enter()
+			.append('path')
+			.attr("d", pathArc)
+			.attr("id",function(d,i) {
+					return 'pathArc'+i;})
+			.style("opacity", 0)
+			.style("fill", function(d,i) {
+				return detailColor[i]})
+//根据指定弧形路径指标文字			
+textPath.selectAll('text')
+		.data(count_data)
+		.enter()
+		.append('text')
+		.attr('font-size',font_size)
+		.attr('fill','white')
+		.attr('id',function(d,i){
+					return 't'+i})
+		.attr('text-anchor','start')
+		.append('textPath')
+		.attr("xlink:href", function(d,i){return '#pathArc'+i})
+		.text(function(d,i){return index_array[i][2]})
+		/*.attr('x',0)
+		.attr('y',-345)
+		.attr('transform',function(d,i){
+				return 'rotate('+360/keyword_num*i+')'
+		})*/
+
+//绘制目标城市指标数据
+var base_data = []
+for(i=0;i<keyword_num;i++){
+	base_data[i] = 100
+}
+console.log('base_data:',base_data)
+var valueArc = d3.arc()
+			.startAngle(function(d,i) { return Math.PI*2/keyword_num*i-Math.PI/domain_num; })
+			.endAngle(function(d,i) { return Math.PI*2/keyword_num*(i+1)-Math.PI/domain_num; })
+			.innerRadius(0)
+			.outerRadius(function(d,i) {return d *3;});
+var domain = svg.append("g")
+			.attr("transform","translate(450,450)")
+			.attr("id","domainD");
+domain.selectAll("path")
+		.data(base_data)
+		.enter()
+		.append("path")
+		.attr("d", valueArc)
+		.attr("id",function(d,i) {
+				return 'p'+i;})
+		.style("fill", function(d,i) {
+					return detailColor[i];
+				});
+//circleLine();
+
+//绘制临近城市分位数据弧形
+var quarter_color = ['orange','red','orange']
+var quarterArc = d3.arc()
+	.startAngle(function (d, i) {
+		return Math.PI * 2 / keyword_num * i - Math.PI / domain_num;
+	})
+	.endAngle(function (d, i) {
+		return Math.PI * 2 / keyword_num * (i + 1) - Math.PI / domain_num;
+	})
+	.innerRadius(function (d, i) {
+		return d * 3;
+	})
+	.outerRadius(function (d, i) {
+		return d * 3 + 5;
+	});
+
+var Q1_circle = svg.append("g")
+	.attr("transform", "translate(450,450)")
+	.attr("id", "Q1_circle");
+Q1_circle.selectAll("path")
+	.data(Q1_data)
+	.enter()
+	.append("path")
+	.attr("d", quarterArc)
+	.attr("id", function (d, i) {
+		return 'p' + i;
+	})
+	.style("fill", quarter_color[0]);	
+	
+var Q2_circle = svg.append("g")
+	.attr("transform", "translate(450,450)")
+	.attr("id", "Q2_circle");
+Q2_circle.selectAll("path")
+	.data(Q2_data)
+	.enter()
+	.append("path")
+	.attr("d", quarterArc)
+	.attr("id", function (d, i) {
+		return 'p' + i;
+	})
+	.style("fill", quarter_color[1]);
+
+var Q3_circle = svg.append("g")
+	.attr("transform", "translate(450,450)")
+	.attr("id", "Q3_circle");
+Q3_circle.selectAll("path")
+	.data(Q3_data)
+	.enter()
+	.append("path")
+	.attr("d", quarterArc)
+	.attr("id", function (d, i) {
+		return 'p' + i;
+	})
+	.style("fill", quarter_color[2]);
+
+
+function update_ring(city_id) {
+	//重新计算目标城市相关数据
+	var target_quarter = city_quarter[city_id.toString()]
+	var Q1_data = []
+	var Q2_data = []
+	var Q3_data = []
+	var target_data = []
+	for(i=0;i<keyword_num;i++){
+		var keyword = keyword_info[i][2]
+		var keyword_quarter = target_quarter[keyword]
+		Q1_data.push(keyword_quarter[0])
+		Q2_data.push(keyword_quarter[1])
+		Q3_data.push(keyword_quarter[2])
+		target_data.push(keyword_quarter[3])
+	}
+
+	//更新城市自身指标值
+    var aa = domain.selectAll("path")
+        .data(target_data);
+	aa.transition()
+        .duration(100)
+        .attr("d", valueArc)
+        .attr("id", function (d, i) {
+            return 'p' + i;
+        });
+	
+	//更新城市临近城市分位数值
+    var bb = Q1_circle.selectAll("path")
+        .data(Q1_data);
+	bb.transition()
+        .duration(100)
+        .attr("d", quarterArc)
+        .attr("id", function (d, i) {
+            return 'p' + i;
+        });
+    var cc = Q2_circle.selectAll("path")
+        .data(Q2_data);
+	cc.transition()
+        .duration(100)
+        .attr("d", quarterArc)
+        .attr("id", function (d, i) {
+            return 'p' + i;
+        });
+    var dd = Q3_circle.selectAll("path")
+        .data(Q3_data);
+	dd.transition()
+        .duration(100)
+        .attr("d", quarterArc)
+        .attr("id", function (d, i) {
+            return 'p' + i;
+        });		
+
+	
+    $("#white_circle").remove();
+    $("#black_circle").remove();
+    //$("#cityname").text(ringInfo.city[cityIndex]);
+	//$("#cityIQ").text(ringInfo.cityIQ[cityIndex]);
+	//circleLine();
+}	
 //获取用户输入Name或者ID
 $('#search_name_button').click(function() {
 	var input_info = $('#city_name_input').val();
@@ -367,15 +796,16 @@ $('#search_name_button').click(function() {
 		city_name = city_name_array[position]
 		var city_country = city_country_array[position]
 		var city_type = city_type_array[position]
-		alert(input_info);		
 	}
 	else{
 		var position = city_name_array.indexOf(input_info)
+		var position_oxford = city_name_array_oxford.indexOf(input_info)
 		cityid = cityid_array[position]
 		city_name = city_name_array[position]
+		city_id_oxford = city_id_array_oxford[position_oxford]
+		city_name_oxford = city_name_array_oxford[position_oxford]
 		var city_country = city_country_array[position]
 		var city_type = city_type_array[position]
-		alert(input_info);	
 	}
 	var city_coordinates = [city_coordinate[1][cityid-1],city_coordinate[0][cityid-1]]
 	map.setView(city_coordinates,6);
@@ -399,33 +829,44 @@ $('#city_tree_button').click(function() {
 	$('#img_2015').attr('src','img/13810_2015jpg/'+cityid+'.jpg')
 	document.getElementById("echart").style.display="none";
 	document.getElementById("near_cities").style.display="none";
+	document.getElementById("oxford_economics").style.display="none";
 	document.getElementById("city_tree").style.display="inline";
   });  
 //点击的Top 9 nearest cities效果设置  
 $('#near_cities_button').click(function() {
 	near_cities = near_cities_array[cityid-1];
+	console.log('near_cities',near_cities)
+	
 		for (var i=0;i<9;i++)
-		{
-			$('#img0'+(i+1).toString()).attr('src','img/13810_2015jpg/'+near_cities[i]+'.jpg')
-			var near_city_id = near_cities[i];
-			var near_city_name = city_name_array[near_city_id-1];
-			var near_city_country = city_country_array[near_city_id-1];
-			var near_city_type = city_type_array[near_city_id-1];
-			$('#near_city0'+(i+1).toString()).text('changed')
+		{var near_city_id = near_cities[i];
+			if (near_city_id != null){
+				$('#img0'+(i+1).toString()).attr('src','img/13810_2015jpg/'+near_cities[i]+'.jpg')				
+				var near_city_name = city_name_array[near_city_id-1];
+				var near_city_country = city_country_array[near_city_id-1];
+				var near_city_type = city_type_array[near_city_id-1];
+
+				var near_city_title = near_city_id.toString()+' '+near_city_name.toString()
+				}
+			
+			else{
+				var near_city_name = ''
+				var near_city_country = ''
+				var near_city_type = ''
+				$('#img0'+(i+1).toString()).attr('src','')
+				var near_city_title = ''}
 			$('#near_city0'+(i+1).toString()+'_id').text(near_city_id)
 			$('#near_city0'+(i+1).toString()+'_name').text(near_city_name)
 			$('#near_city0'+(i+1).toString()+'_country').text(near_city_country)
 			$('#near_city0'+(i+1).toString()+'_type').text(near_city_type)
-			
-			var near_city_title = near_city_id.toString()+' '+near_city_name.toString()
 			$('#near_city_title0'+(i+1).toString()).text(near_city_title)
 		}	
 	document.getElementById("echart").style.display="none";
 	document.getElementById("city_tree").style.display="none";
+	document.getElementById("oxford_economics").style.display="none";
 	document.getElementById("near_cities").style.display="inline";
   });    
 //点击Boxplot Analysis效果设置  
-$('#boxplot_botton').click(function() {
+$('#boxplot_button').click(function() {
 	near_cities = near_cities_array[cityid-1];
 	var boxplot_raw_data = new Array();
 	//生成各类指标的数据，数组切片均生成二维数组
@@ -833,13 +1274,27 @@ $('#boxplot_botton').click(function() {
 });
 	document.getElementById("near_cities").style.display="none";
 	document.getElementById("city_tree").style.display="none";
+	document.getElementById("oxford_economics").style.display="none";
 	document.getElementById("echart").style.display="inline";
   }); 
-//点击Reset效果设置
+//点击Oxford效果设置 
+$('#oxford_button').click(function() {
+	console.log('oxford_economics')
+	console.log(city_id_oxford)
+	update_ring(city_id_oxford)
+	document.getElementById("echart").style.display="none";
+	document.getElementById("near_cities").style.display="none";
+	document.getElementById("city_tree").style.display="none";
+	document.getElementById("oxford_economics").style.display="inline";
+  });  
+  //点击Reset效果设置
 $('#reset_botton').click(function() {
 	document.getElementById("near_cities").style.display="none";
 	document.getElementById("city_tree").style.display="none";
 	document.getElementById("echart").style.display="none";
+	document.getElementById("oxford_economics").style.display="none";
+})
+
 })  
 </script>
 </body>

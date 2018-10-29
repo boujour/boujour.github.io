@@ -22,7 +22,7 @@
 		}
 		.near_city_info_field {font-weight:bold}
 		.basic_info_data{font-size:12px}
-		.fonction_button{box-shadow:2px 2px 3px #aaaaaa;}
+		.function_button{box-shadow:2px 2px 3px #aaaaaa;}
 		.near_city_title{font-size:1vh}
 		.near_city_image{height:8vh}
 
@@ -64,15 +64,15 @@
 </table>
 
 <div style="position: absolute; left:20px;top:150px;">
-	<div id="city_tree_button" class='fonction_button' style="position: absolute; left:0px;top:0px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
+	<div id="city_tree_button" class='function_button' style="position: absolute; left:0px;top:0px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
 		<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:30px;top:15px;"</img>
 		<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:20px; top:40px" >City Tree </p>
 	</div>
-	<div id="near_cities_button" class='fonction_button' style="position: absolute; left:0px;top:90px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
+	<div id="near_cities_button" class='function_button' style="position: absolute; left:0px;top:90px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
 		<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:30px;top:15px;"</img>
 		<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:10px; top:40px" >Similar Cities</p>
 	</div>
-	<div id="boxplot_botton" class='fonction_button' style="position: absolute; left:0px;top:180px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
+	<div id="boxplot_botton" class='function_button' style="position: absolute; left:0px;top:180px;width:100px;height:80px;background:rgba(238,238,238,0.8)">		
 		<img src='./img/icon/press.png'id="city_tree_button" style="position: absolute; left:30px;top:15px;"</img>
 		<p style="font-family:微软雅黑;color:rgb(18,89,147);font-weight:bold;font-size:12px; position: absolute; left:25px; top:40px" >Boxplot </p>
 	</div>
@@ -99,10 +99,10 @@
 <img id='img_1990' style="position:absolute;left:400px;top:300px;width:100px;height:100px" src="img/13810_1990jpg/1.jpg"></img>
 <img id='img_2000' style="position:absolute;left:400px;top:400px;width:100px;height:100px" src="img/13810_2000jpg/1.jpg"></img>
 <img id='img_2015' style="position:absolute;left:400px;top:500px;width:100px;height:100px" src="img/13810_2015jpg/1.jpg"></img>
-<p style="z-index:3; position:absolute; left:430px;top:260px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>1975</p>
-<p style="z-index:3; position:absolute; left:430px;top:360px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>1990</p>
-<p style="z-index:3; position:absolute; left:430px;top:460px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>2000</p>
-<p style="z-index:3; position:absolute; left:430px;top:560px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>2015</p>
+<p style="z-index:3; position:absolute; left:440px;top:270px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>1975</p>
+<p style="z-index:3; position:absolute; left:440px;top:370px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>1990</p>
+<p style="z-index:3; position:absolute; left:440px;top:470px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px" id = 'selectIcon'>2000</p>
+<p style="z-index:3; position:absolute; left:440px;top:570px;font-family:微软雅黑;color:rgb(255,255,255);font-weight:bold;font-size:8px;" id = 'selectIcon'>2015</p>
 </div>
 
 <div id='near_cities' style="display: none;position: absolute; z-index:0;right:0%;top:6vh;width :30%;height:80%;background-color:rgba(18,89,147,0.8)">
@@ -249,13 +249,14 @@
 
 
 	// 根据城市类型控制颜色
+	console.log('statesData',statesData)
 	function getColor(d) {
 	
 		return d == 1 ? 'rgb(95,199,97)' :
 				d == 2 ? 'rgb(194,150,104)':
 				d == 3  ? 'rgb(101,214,181)' :
-				d == 4  ? 'rgb(240,205,35)' :
-				d == 5   ? 'rgb(222,65,45)' :
+				d == 4  ?  'rgb(222,65,45)':
+				d == 5   ? 'rgb(240,205,35)' :
 				d == 6   ? 'rgb(194,47,124)' :
 				d == 7   ? 'rgb(122,126,222)' :
 							'rgb(156,156,156)';
@@ -344,7 +345,7 @@ proj4.defs("urn:ogc:def:crs:EPSG::3395", "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0
 	legend.onAdd = function (map) {
 
 		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [6,5,4,3,1,2,7],
+			grades = [6,4,5,3,1,2,7],
 			type = ['区域型','成熟型','发育型','成长型','萌芽型','佝偻型','衰退型'],
 			labels = [],
 			value;
